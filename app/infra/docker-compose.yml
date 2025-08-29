@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: medicaid
+      POSTGRES_PASSWORD: medicaid
+      POSTGRES_DB: medicaid
+    ports:
+      - "5432:5432"
+  backend:
+    build: ../backend
+    command: uvicorn app.backend.main:app --host 0.0.0.0 --port 8000
+    environment:
+      DATABASE_URL: postgresql://medicaid:medicaid@db:5432/medicaid
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+  frontend:
+    build: ../frontend
+    command: npm run dev -- --host
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
